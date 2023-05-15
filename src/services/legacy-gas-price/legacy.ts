@@ -15,7 +15,7 @@ import {
 } from './types'
 
 import { ChainId, NETWORKS } from '@/config'
-import { RpcFetcher, NodeJSCache } from '@/services'
+import { RpcFetcher, Cache } from '@/services'
 import { GWEI, DEFAULT_TIMEOUT, GWEI_PRECISION, DEFAULT_BLOCK_DURATION } from '@/constants'
 
 import { MULTIPLIERS, DEFAULT_GAS_PRICE } from './constants'
@@ -105,7 +105,7 @@ export class LegacyGasPriceOracle implements LegacyOracle {
 
   private readonly fetcher: RpcFetcher
 
-  private cache: NodeJSCache<GasPrice>
+  private cache: Cache<'memory'>
   private LEGACY_KEY = (chainId: ChainId) => `legacy-fee-${chainId}`
 
   constructor({ fetcher, ...options }: LegacyOptionsPayload) {
@@ -124,7 +124,7 @@ export class LegacyGasPriceOracle implements LegacyOracle {
       this.onChainOracles = { ...network.onChainOracles }
     }
 
-    this.cache = new NodeJSCache({ stdTTL: this.configuration.blockTime, useClones: false })
+    this.cache = new Cache('memory', { ttl: this.configuration.blockTime })
   }
 
   public addOffChainOracle(oracle: OffChainOracle): void {
@@ -236,7 +236,7 @@ export class LegacyGasPriceOracle implements LegacyOracle {
     }
 
     const cacheKey = this.LEGACY_KEY(this.configuration.chainId)
-    const cachedFees = await this.cache.get(cacheKey)
+    const cachedFees = await this.cache.get<GasPrice>(cacheKey)
 
     if (cachedFees) {
       return cachedFees
