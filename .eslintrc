@@ -2,8 +2,7 @@
   "env": {
     "node": true,
     "browser": true,
-    "es6": true,
-    "mocha": true
+    "es6": true
   },
   "plugins": ["prettier", "eslint-plugin-import", "eslint-plugin-node", "eslint-plugin-promise", "@typescript-eslint"],
   "extends": ["prettier", "eslint:recommended", "plugin:@typescript-eslint/recommended", "plugin:prettier/recommended"],
@@ -29,7 +28,7 @@
     "@typescript-eslint/consistent-type-definitions": 0,
     "@typescript-eslint/no-empty-function": 2,
     "@typescript-eslint/no-empty-interface": 2,
-    "@typescript-eslint/no-explicit-any": 2,
+    "@typescript-eslint/no-explicit-any": 1,
     "@typescript-eslint/no-extra-non-null-assertion": 2,
     "@typescript-eslint/require-await": 2,
     "@typescript-eslint/no-floating-promises": 0,

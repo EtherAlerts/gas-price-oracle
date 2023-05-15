@@ -15,9 +15,10 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: 18
-      - run: yarn install --frozen-lockfile
-      - run: yarn test
-      - run: yarn lint
+          cache: 'npm'
+      - run: npm ci
+      - run: npm run test
+      - run: npm run lint
 
   publish:
     runs-on: ubuntu-latest
@@ -26,7 +27,7 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-      - run: yarn install
+      - run: npm install
       - name: Github Npm registry login
         # NPM doesn't understand env vars and needs auth file lol
         run: echo "//npm.pkg.github.com/:_authToken=${{ secrets.GITHUB_TOKEN }}" > ~/.npmrc
