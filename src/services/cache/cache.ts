@@ -1,6 +1,6 @@
 import { NodeCache } from '@/services'
 import { Options as NodeCacheOptions } from 'node-cache'
-import { MemoryCache, Options as MemoryCacheOptions } from '@/services/cache/memory.cache'
+import { MemoryCache, MemoryCacheOptions as MemoryCacheOptions } from '@/services/cache/memory.cache'
 
 export interface ICache {
   get<T>(key: string): Promise<T | null>

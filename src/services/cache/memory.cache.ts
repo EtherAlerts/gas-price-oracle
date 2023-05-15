@@ -1,13 +1,13 @@
 import { ICache } from '@/services/cache/cache'
 
-export interface Options {
+export interface MemoryCacheOptions {
   ttl: number
 }
 
 export class MemoryCache implements ICache {
   private _store: Map<string, { expiresAt: number; value: unknown }> = new Map()
 
-  constructor(private readonly options: Options) {}
+  constructor(private readonly options: MemoryCacheOptions) {}
 
   async get<T>(key: string): Promise<T | null> {
     const stored = this._store.get(key)
