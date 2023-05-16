@@ -124,23 +124,35 @@ describe('eip1559', function () {
             estimateGas.maxFeePerGas.should.be.at.equal(estimatedMaxFee)
           }
         })
-        it('should cache', async function () {
-          eipOracle = new GasPriceOracle({ shouldCache: true, chainId })
-          const estimateGasFirst: EstimatedGasPrice = await eipOracle.eip1559.estimateFees()
 
-          await sleep(2000)
-          const estimateGasSecond: EstimatedGasPrice = await eipOracle.eip1559.estimateFees()
+        describe('cache', function () {
+          const checkWithInstance = async (eipOracle: GasPriceOracle) => {
+            const estimateGasFirst: EstimatedGasPrice = await eipOracle.eip1559.estimateFees()
 
-          if (estimateGasFirst?.maxFeePerGas) {
-            estimateGasFirst.maxFeePerGas.should.be.at.equal(estimateGasSecond?.maxFeePerGas)
+            await sleep(2000)
+            const estimateGasSecond: EstimatedGasPrice = await eipOracle.eip1559.estimateFees()
+
+            if (estimateGasFirst?.maxFeePerGas) {
+              estimateGasFirst.maxFeePerGas.should.be.at.equal(estimateGasSecond?.maxFeePerGas)
+            }
+
+            await sleep(4000)
+            const estimateGasThird: EstimatedGasPrice = await eipOracle.eip1559.estimateFees()
+
+            if (estimateGasSecond?.maxFeePerGas) {
+              estimateGasSecond.maxFeePerGas.should.be.at.equal(estimateGasThird?.maxFeePerGas)
+            }
           }
 
-          await sleep(4000)
-          const estimateGasThird: EstimatedGasPrice = await eipOracle.eip1559.estimateFees()
+          it('node cache', async function () {
+            eipOracle = new GasPriceOracle({ cache: { enabled: true }, chainId })
+            await checkWithInstance(eipOracle)
+          })
 
-          if (estimateGasSecond?.maxFeePerGas) {
-            estimateGasSecond.maxFeePerGas.should.be.at.equal(estimateGasThird?.maxFeePerGas)
-          }
+          it('in-memory cache', async function () {
+            eipOracle = new GasPriceOracle({ cache: { strategy: 'memory', enabled: true }, chainId })
+            await checkWithInstance(eipOracle)
+          })
         })
       })
     })

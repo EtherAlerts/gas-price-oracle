@@ -1,4 +1,4 @@
-import { RpcFetcher } from '@/services'
+import { CacheOptions, RpcFetcher } from '@/services'
 
 export type OffChainOracle = {
   url: string
@@ -28,8 +28,6 @@ export type AllOracles = {
   offChainOracles: OffChainOracles
 }
 
-export type NetworkConfig = Record<number, AllOracles>
-
 export type GasPriceKey = 'instant' | 'fast' | 'standard' | 'low'
 export type GasPrice = Record<GasPriceKey, number>
 
@@ -38,7 +36,7 @@ export type LegacyOptions = {
   timeout?: number
   blockTime?: number
   defaultRpc?: string
-  shouldCache?: boolean
+  cache?: CacheOptions
   fallbackGasPrices?: GasPrice
 }
 

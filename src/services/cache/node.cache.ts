@@ -1,11 +1,11 @@
 import NodeCacheModule, { Options as CacheNodeOptions } from 'node-cache'
-import { ICache } from '@/services/cache/cache'
+import { ICache } from '@/services'
 
 export class NodeCache implements ICache {
   private nodeCache: NodeCacheModule
 
-  constructor(options: CacheNodeOptions) {
-    this.nodeCache = new NodeCacheModule(options ?? {})
+  constructor(options: CacheNodeOptions = {}) {
+    this.nodeCache = new NodeCacheModule(options)
   }
 
   async get<T>(key: string): Promise<T | null> {

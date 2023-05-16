@@ -38,7 +38,7 @@ beforeEach('beforeEach', function () {
 })
 
 const INJECTED_CHAIN_ID = 5
-const INJECTED_RPC_URL = 'https://rpc.goerli.mudit.blog/'
+const INJECTED_RPC_URL = 'https://ethereum-goerli.publicnode.com/'
 
 describe('complex test', function () {
   describe('fetching data', function () {

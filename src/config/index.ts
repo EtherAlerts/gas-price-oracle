@@ -21,7 +21,7 @@ export enum ChainId {
 export const NETWORKS: Record<number, NetworksConfig> = {
   [ChainId.MAINNET]: {
     oracles: mainnetOracles,
-    rpcUrl: 'https://api.mycryptoapi.com/eth',
+    rpcUrl: 'https://eth.llamarpc.com',
     defaultGasPrice: 22,
     maxGasPrice: 1500,
     blocksCount: 10,
@@ -29,7 +29,7 @@ export const NETWORKS: Record<number, NetworksConfig> = {
   },
   [ChainId.BSC]: {
     oracles: bscOracles,
-    rpcUrl: 'https://bsc-dataseed1.ninicoin.io',
+    rpcUrl: 'https://bsc.publicnode.com',
     defaultGasPrice: 5,
     maxGasPrice: 200,
     blocksCount: 10,
@@ -45,7 +45,7 @@ export const NETWORKS: Record<number, NetworksConfig> = {
   },
   [ChainId.POLYGON]: {
     oracles: polygonOracles,
-    rpcUrl: 'https://rpc-mainnet.maticvigil.com',
+    rpcUrl: 'https://polygon.llamarpc.com',
     defaultGasPrice: 75,
     maxGasPrice: 1000,
     blocksCount: 10,

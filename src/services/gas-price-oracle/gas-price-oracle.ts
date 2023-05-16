@@ -26,10 +26,14 @@ export class GasPriceOracle implements OracleProvider {
   public eip1559: EstimateOracle
   public legacy: LegacyOracle
   public fetcher: RpcFetcher
+
   private chainId: ChainId
+
   public constructor(options?: GasOracleOptions) {
     const timeout = options?.timeout ?? DEFAULT_TIMEOUT
+
     this.chainId = options?.chainId || ChainId.MAINNET
+
     const defaultRpc = options?.defaultRpc || NETWORKS[this.chainId].rpcUrl
 
     this.fetcher = new RpcFetcher(defaultRpc, timeout)

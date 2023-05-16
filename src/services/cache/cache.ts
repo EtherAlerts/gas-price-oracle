@@ -1,28 +1,16 @@
-import { NodeCache } from '@/services'
-import { Options as NodeCacheOptions } from 'node-cache'
+import { CacheOptions, CacheStrategy, ICache, NodeCache } from '@/services'
 import { MemoryCache, MemoryCacheOptions as MemoryCacheOptions } from '@/services/cache/memory.cache'
 
-export interface ICache {
-  get<T>(key: string): Promise<T | null>
-  set(key: string, value: unknown): Promise<boolean>
-  has(key: string): Promise<boolean>
-}
-
-export type Strategy = 'node' | 'memory'
-
-export class Cache<O extends Strategy> implements ICache {
+export class Cache<O extends CacheStrategy> implements ICache {
   private _adapter: ICache
 
-  constructor(
-    strategy: O,
-    options: {
-      node: NodeCacheOptions
-      memory: MemoryCacheOptions
-    }[O],
-  ) {
+  constructor(strategy: O, options?: CacheOptions['options']) {
     switch (strategy) {
       case 'node':
-        this._adapter = new NodeCache(options as NodeCacheOptions)
+        this._adapter = new NodeCache({
+          stdTTL: options?.ttl,
+          useClones: false,
+        })
         break
       case 'memory':
         this._adapter = new MemoryCache(options as MemoryCacheOptions)

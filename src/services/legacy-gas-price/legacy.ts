@@ -15,7 +15,7 @@ import {
 } from './types'
 
 import { ChainId, NETWORKS } from '@/config'
-import { RpcFetcher, Cache } from '@/services'
+import { RpcFetcher, Cache, CacheStrategy } from '@/services'
 import { GWEI, DEFAULT_TIMEOUT, GWEI_PRECISION, DEFAULT_BLOCK_DURATION } from '@/constants'
 
 import { MULTIPLIERS, DEFAULT_GAS_PRICE } from './constants'
@@ -95,7 +95,10 @@ export class LegacyGasPriceOracle implements LegacyOracle {
   public onChainOracles: OnChainOracles = {}
   public offChainOracles: OffChainOracles = {}
   public configuration: Required<LegacyOptions> = {
-    shouldCache: false,
+    cache: {
+      enabled: false,
+      strategy: 'node',
+    },
     chainId: ChainId.MAINNET,
     timeout: DEFAULT_TIMEOUT,
     blockTime: DEFAULT_BLOCK_DURATION,
@@ -105,13 +108,13 @@ export class LegacyGasPriceOracle implements LegacyOracle {
 
   private readonly fetcher: RpcFetcher
 
-  private cache: Cache<'memory'>
+  private cache: Cache<CacheStrategy>
   private LEGACY_KEY = (chainId: ChainId) => `legacy-fee-${chainId}`
 
   constructor({ fetcher, ...options }: LegacyOptionsPayload) {
     this.fetcher = fetcher
     if (options) {
-      this.configuration = { ...this.configuration, ...options }
+      this.configuration = { ...this.configuration, ...options, cache: { ...this.configuration.cache, ...(options.cache ?? {}) } }
     }
 
     const { defaultGasPrice } = NETWORKS[ChainId.MAINNET]
@@ -124,7 +127,9 @@ export class LegacyGasPriceOracle implements LegacyOracle {
       this.onChainOracles = { ...network.onChainOracles }
     }
 
-    this.cache = new Cache('memory', { ttl: this.configuration.blockTime })
+    if (this.configuration.cache.enabled) {
+      this.cache = new Cache(this.configuration.cache.strategy as CacheStrategy, { ttl: this.configuration.blockTime })
+    }
   }
 
   public addOffChainOracle(oracle: OffChainOracle): void {
@@ -200,7 +205,6 @@ export class LegacyGasPriceOracle implements LegacyOracle {
         return await this.askOracle(oracle)
       } catch (e) {
         console.info(`${oracle} has error - `, e.message)
-        continue
       }
     }
     throw new Error('All oracles are down. Probably a network error.')
@@ -236,7 +240,7 @@ export class LegacyGasPriceOracle implements LegacyOracle {
     }
 
     const cacheKey = this.LEGACY_KEY(this.configuration.chainId)
-    const cachedFees = await this.cache.get<GasPrice>(cacheKey)
+    const cachedFees = await this.cache?.get<GasPrice>(cacheKey)
 
     if (cachedFees) {
       return cachedFees
@@ -245,7 +249,7 @@ export class LegacyGasPriceOracle implements LegacyOracle {
     if (Object.keys(this.offChainOracles).length > 0) {
       try {
         this.lastGasPrice = await this.fetchGasPricesOffChain(shouldGetMedian)
-        if (this.configuration.shouldCache) {
+        if (this.configuration.cache.enabled) {
           await this.cache.set(cacheKey, this.lastGasPrice)
         }
         return this.lastGasPrice
@@ -259,7 +263,7 @@ export class LegacyGasPriceOracle implements LegacyOracle {
         const fastGas = await this.fetchGasPricesOnChain()
 
         this.lastGasPrice = LegacyGasPriceOracle.getCategorize(fastGas)
-        if (this.configuration.shouldCache) {
+        if (this.configuration.cache.enabled) {
           await this.cache.set(cacheKey, this.lastGasPrice)
         }
         return this.lastGasPrice
@@ -272,7 +276,7 @@ export class LegacyGasPriceOracle implements LegacyOracle {
       const fastGas = await this.fetchGasPriceFromRpc()
 
       this.lastGasPrice = LegacyGasPriceOracle.getCategorize(fastGas)
-      if (this.configuration.shouldCache) {
+      if (this.configuration.cache.enabled) {
         await this.cache.set(cacheKey, this.lastGasPrice)
       }
       return this.lastGasPrice

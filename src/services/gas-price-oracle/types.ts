@@ -1,4 +1,4 @@
-import { RpcFetcher, GasPrice, LegacyOracle, EstimatedGasPrice, EstimateOracle, GasPriceKey } from '@/services'
+import { RpcFetcher, GasPrice, LegacyOracle, EstimatedGasPrice, EstimateOracle, GasPriceKey, CacheOptions } from '@/services'
 
 export type GetTxGasParamsInput = GetGasPriceInput & {
   bumpPercent?: number
@@ -37,7 +37,7 @@ export type GasOracleOptions = {
   blocksCount?: number
   percentile?: number
   blockTime?: number
-  shouldCache?: boolean
+  cache?: CacheOptions
   minPriority?: number
   fallbackGasPrices?: FallbackGasPrices
 }

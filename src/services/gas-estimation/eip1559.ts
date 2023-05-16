@@ -4,7 +4,7 @@ import { FeeHistory, Block } from '@/types'
 import { Config, EstimateOracle, EstimatedGasPrice, CalculateFeesParams, GasEstimationOptionsPayload } from './types'
 
 import { ChainId, NETWORKS } from '@/config'
-import { RpcFetcher, Cache } from '@/services'
+import { RpcFetcher, Cache, CacheStrategy } from '@/services'
 import { findMax, fromNumberToHex, fromWeiToGwei, getMedian } from '@/utils'
 import { BG_ZERO, DEFAULT_BLOCK_DURATION, PERCENT_MULTIPLIER } from '@/constants'
 
@@ -13,7 +13,10 @@ import { DEFAULT_PRIORITY_FEE, PRIORITY_FEE_INCREASE_BOUNDARY, FEE_HISTORY_BLOCK
 // !!! MAKE SENSE ALL CALCULATIONS IN GWEI !!!
 export class Eip1559GasPriceOracle implements EstimateOracle {
   public configuration: Config = {
-    shouldCache: false,
+    cache: {
+      enabled: false,
+      strategy: 'node',
+    },
     chainId: ChainId.MAINNET,
     fallbackGasPrices: undefined,
     minPriority: DEFAULT_PRIORITY_FEE,
@@ -23,7 +26,7 @@ export class Eip1559GasPriceOracle implements EstimateOracle {
   }
   private fetcher: RpcFetcher
 
-  private cache: Cache<'memory'>
+  private cache: Cache<'memory' | 'node'>
   private FEES_KEY = (chainId: ChainId) => `estimate-fee-${chainId}`
 
   constructor({ fetcher, ...options }: GasEstimationOptionsPayload) {
@@ -33,16 +36,18 @@ export class Eip1559GasPriceOracle implements EstimateOracle {
     this.configuration.percentile = NETWORKS[chainId]?.percentile || FEE_HISTORY_PERCENTILE
 
     if (options) {
-      this.configuration = { ...this.configuration, ...options }
+      this.configuration = { ...this.configuration, ...options, cache: { ...this.configuration.cache, ...(options.cache ?? {}) } }
     }
 
-    this.cache = new Cache('memory', { ttl: this.configuration.blockTime })
+    if (this.configuration.cache?.enabled) {
+      this.cache = new Cache(this.configuration.cache.strategy as CacheStrategy, { ttl: this.configuration.blockTime })
+    }
   }
 
   public async estimateFees(fallbackGasPrices?: EstimatedGasPrice): Promise<EstimatedGasPrice> {
     try {
       const cacheKey = this.FEES_KEY(this.configuration.chainId)
-      const cachedFees = await this.cache.get<EstimatedGasPrice>(cacheKey)
+      const cachedFees = await this.cache?.get<EstimatedGasPrice>(cacheKey)
 
       if (cachedFees) {
         return cachedFees
@@ -68,7 +73,7 @@ export class Eip1559GasPriceOracle implements EstimateOracle {
       })
 
       const fees = await this.calculateFees({ baseFee, feeHistory: data.result })
-      if (this.configuration.shouldCache) {
+      if (this.configuration.cache.enabled) {
         await this.cache.set(cacheKey, fees)
       }
 

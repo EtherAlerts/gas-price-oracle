@@ -1,7 +1,7 @@
 import BigNumber from 'bignumber.js'
 
 import { FeeHistory } from '@/types'
-import { RpcFetcher } from '@/services'
+import { CacheOptions, RpcFetcher } from '@/services'
 
 export type EstimatedGasPrice = {
   maxFeePerGas: number
@@ -24,7 +24,7 @@ export type Options = {
   blocksCount?: number
   percentile?: number
   blockTime?: number
-  shouldCache?: boolean
+  cache?: CacheOptions
   fallbackGasPrices: EstimatedGasPrice | undefined
 }
 

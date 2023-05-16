@@ -1,30 +1,39 @@
-import { ICache } from '@/services/cache/cache'
+import { ICache } from '@/services'
 
 export interface MemoryCacheOptions {
-  ttl: number
+  ttl?: number
+}
+
+export interface StoredData {
+  expiresAt?: number
+  value: unknown
 }
 
 export class MemoryCache implements ICache {
-  private _store: Map<string, { expiresAt: number; value: unknown }> = new Map()
+  private _store: Map<string, StoredData> = new Map()
 
-  constructor(private readonly options: MemoryCacheOptions) {}
+  constructor(private readonly _options: MemoryCacheOptions = {}) {}
 
   async get<T>(key: string): Promise<T | null> {
     const stored = this._store.get(key)
     let result = null
     if (stored) {
-      if (stored.expiresAt <= Date.now()) {
-        result = stored.value as T
-      } else {
+      if (typeof stored.expiresAt === 'number' && Date.now() > stored.expiresAt) {
         this._store.delete(key)
+      } else {
+        result = stored.value as T
       }
     }
     return Promise.resolve(result)
   }
 
   async set(key: string, value: unknown): Promise<boolean> {
-    const expireAt = Date.now() + this.options.ttl * 1000
-    await this._store.set(key, { expiresAt: expireAt, value })
+    const data: StoredData = { value }
+    if (typeof this._options.ttl === 'number') {
+      data.expiresAt = Date.now() + this._options.ttl * 1000
+    }
+
+    await this._store.set(key, data)
     return true
   }
 
