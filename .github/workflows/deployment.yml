@@ -1,13 +1,17 @@
 name: Deployment
 
+permissions:
+  contents: read
+  packages: write
+
 on:
   push:
-    branches: ['*']
+    branches: ['main','dev']
     tags: ['v[0-9]+.[0-9]+.[0-9]+']
-  pull_request:
 
 jobs:
   build:
+
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -27,10 +31,13 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-      - run: npm install
-      - name: Github Npm registry login
-        # NPM doesn't understand env vars and needs auth file lol
-        run: echo "//npm.pkg.github.com/:_authToken=${{ secrets.GITHUB_TOKEN }}" > ~/.npmrc
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+          cache: 'npm'
+          registry-url: 'https://npm.pkg.github.com'
+          scope: '@etheralerts'
+      - run: npm ci
       - name: Set vars
         id: vars
         run: |
@@ -41,11 +48,5 @@ jobs:
           [ ${{ steps.vars.outputs.version }} = $(grep '"version":' package.json | grep -o "[0-9.]*") ] || (echo "Git tag doesn't match version in package.json" && false)
       - name: Publish to npm
         run: npm publish
-      - name: Create GitHub Release Draft
-        uses: actions/create-release@v1
-        with:
-          tag_name: ${{ github.ref }}
-          release_name: Release ${{ steps.vars.outputs.version }}
-          draft: true
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

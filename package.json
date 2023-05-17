@@ -1,6 +1,6 @@
 {
-  "name": "gas-price-oracle",
-  "version": "0.5.5",
+  "name": "@etheralerts/gas-price-oracle",
+  "version": "0.5.3",
   "description": "Gas Price Oracle library for Ethereum dApps.",
   "homepage": "https://github.com/peppersec/gas-price-oracle",
   "main": "./lib/index.js",
@@ -8,7 +8,7 @@
   "types": "./lib/index.d.ts",
   "repository": {
     "type": "git",
-    "url": "https://github.com/peppersec/gas-price-oracle.git"
+    "url": "https://github.com/EtherAlerts/gas-price-oracle.git"
   },
   "scripts": {
     "test": "ts-mocha --timeout 30000 --paths 'src/tests/*.test.ts'",
@@ -18,18 +18,9 @@
     "prettier:check": "prettier --check . --config .prettierrc",
     "prettier:fix": "prettier --write . --config .prettierrc",
     "lint": "yarn eslint && yarn prettier:check",
-    "prepare": "yarn build && yarn build:esm",
-    "prepublishOnly": "yarn test && yarn lint"
+    "prepare": "yarn build && yarn build:esm"
   },
   "author": "Alexey Pertsev <alexey@peppersec.com> (https://peppersec.com)",
-  "keywords": [
-    "Gas",
-    "Gas price",
-    "Ethereum",
-    "Oracle",
-    "EIP-1559",
-    "London Fork"
-  ],
   "license": "MIT",
   "devDependencies": {
     "@types/chai": "^4.2.11",
