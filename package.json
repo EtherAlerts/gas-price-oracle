@@ -1,6 +1,6 @@
 {
   "name": "@etheralerts/gas-price-oracle",
-  "version": "0.5.3",
+  "version": "0.5.4",
   "description": "Gas Price Oracle library for Ethereum dApps.",
   "homepage": "https://github.com/peppersec/gas-price-oracle",
   "main": "./lib/index.js",
