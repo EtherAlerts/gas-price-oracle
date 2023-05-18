@@ -1,4 +1,4 @@
-import { CacheOptions, CacheStrategy, ICache, NodeCache } from '@/services'
+import { CacheOptions, CacheStrategy, ICache, NodeCacheStrategy } from '@/services'
 import { MemoryCache, MemoryCacheOptions as MemoryCacheOptions } from '@/services/cache/memory.cache'
 
 export class Cache<O extends CacheStrategy> implements ICache {
@@ -7,7 +7,7 @@ export class Cache<O extends CacheStrategy> implements ICache {
   constructor(strategy: O, options?: CacheOptions['options']) {
     switch (strategy) {
       case 'node':
-        this._adapter = new NodeCache({
+        this._adapter = new NodeCacheStrategy({
           stdTTL: options?.ttl,
           useClones: false,
         })
