@@ -240,11 +240,6 @@ describe('legacy gasOracle', function () {
         }
       }
 
-      it('node cache', async function () {
-        const oracle = new GasPriceOracle({ cache: { enabled: true } })
-        await checkWithInstance(oracle)
-      })
-
       it('in-memory cache', async function () {
         const oracle = new GasPriceOracle({ cache: { strategy: 'memory', enabled: true } })
         await checkWithInstance(oracle)

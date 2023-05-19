@@ -4,7 +4,7 @@ export interface ICache {
   has(key: string): Promise<boolean>
 }
 
-export type CacheStrategy = 'node' | 'memory'
+export type CacheStrategy = 'memory'
 
 export type CacheOptions<O extends CacheStrategy = CacheStrategy> = {
   enabled?: boolean

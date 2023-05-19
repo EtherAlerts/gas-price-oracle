@@ -15,7 +15,7 @@ export class Eip1559GasPriceOracle implements EstimateOracle {
   public configuration: Config = {
     cache: {
       enabled: false,
-      strategy: 'node',
+      strategy: 'memory',
     },
     chainId: ChainId.MAINNET,
     fallbackGasPrices: undefined,
@@ -26,7 +26,7 @@ export class Eip1559GasPriceOracle implements EstimateOracle {
   }
   private fetcher: RpcFetcher
 
-  private cache: Cache<'memory' | 'node'>
+  private cache: Cache<CacheStrategy>
   private FEES_KEY = (chainId: ChainId) => `estimate-fee-${chainId}`
 
   constructor({ fetcher, ...options }: GasEstimationOptionsPayload) {

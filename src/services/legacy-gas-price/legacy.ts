@@ -97,7 +97,7 @@ export class LegacyGasPriceOracle implements LegacyOracle {
   public configuration: Required<LegacyOptions> = {
     cache: {
       enabled: false,
-      strategy: 'node',
+      strategy: 'memory',
     },
     chainId: ChainId.MAINNET,
     timeout: DEFAULT_TIMEOUT,

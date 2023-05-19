@@ -144,11 +144,6 @@ describe('eip1559', function () {
             }
           }
 
-          it('node cache', async function () {
-            eipOracle = new GasPriceOracle({ cache: { enabled: true }, chainId })
-            await checkWithInstance(eipOracle)
-          })
-
           it('in-memory cache', async function () {
             eipOracle = new GasPriceOracle({ cache: { strategy: 'memory', enabled: true }, chainId })
             await checkWithInstance(eipOracle)

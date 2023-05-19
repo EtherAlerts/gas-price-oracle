@@ -53,7 +53,7 @@ export const NETWORKS: Record<number, NetworksConfig> = {
   },
   [ChainId.OPTIMISM]: {
     oracles: optimismOracles,
-    rpcUrl: 'https://mainnet.optimism.io',
+    rpcUrl: 'https://optimism.blockpi.network/v1/rpc/public',
     defaultGasPrice: 0.001,
     maxGasPrice: 5,
     blocksCount: 10,
